@@ -454,15 +454,20 @@ class RestSession(object):
                     start = response.json()['pageStartAt']
                 except KeyError:
                     print(response.headers)
-                end = response.json()['pageEndAt']
-                events = response.json()['events']
-                if direction == 'next':
-                    events = events[::-1]
-                if start < results['pageStartAt']:
-                    results['pageStartAt'] = start
-                if end > results['pageEndAt']:
-                    results['pageEndAt'] = end
-                results['events'].extend(events)
+
+                resp = response.json()
+                if 'items' in resp:
+                    results['items'].extend(resp['items'])
+                else:
+                    end = response.json()['pageEndAt']
+                    events = response.json()['events']
+                    if direction == 'next':
+                        events = events[::-1]
+                    if start < results['pageStartAt']:
+                        results['pageStartAt'] = start
+                    if end > results['pageEndAt']:
+                        results['pageEndAt'] = end
+                    results['events'].extend(events)
 
             total_pages -= 1
 
